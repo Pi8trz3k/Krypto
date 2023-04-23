@@ -1,5 +1,7 @@
 package org.example;
 
+import java.math.BigInteger;
+
 public class DES {
     // key lenght
     private static final int keyLength = 64;
@@ -103,4 +105,30 @@ public class DES {
             {7,  11,  4,  1,  9, 12, 14,  2,  0,  6, 10, 13, 15,  3,  5,  8},
             {2,  1,  14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11}
     };
+
+    private static String hexToBin(String hex) {
+        hex = hex.replaceAll("0", "0000");
+        hex = hex.replaceAll("1", "0001");
+        hex = hex.replaceAll("2", "0010");
+        hex = hex.replaceAll("3", "0011");
+        hex = hex.replaceAll("4", "0100");
+        hex = hex.replaceAll("5", "0101");
+        hex = hex.replaceAll("6", "0110");
+        hex = hex.replaceAll("7", "0111");
+        hex = hex.replaceAll("8", "1000");
+        hex = hex.replaceAll("9", "1001");
+        hex = hex.replaceAll("[A, a]", "1010");
+        hex = hex.replaceAll("[B, b]", "1011");
+        hex = hex.replaceAll("[C, c]", "1100");
+        hex = hex.replaceAll("[D, d]", "1101");
+        hex = hex.replaceAll("[E, e]", "1110");
+        hex = hex.replaceAll("[F, f]", "1111");
+        return hex;
+    }
+
+    private static String binToHex(String bin) {
+        BigInteger bigInteger = new BigInteger(bin, 2);
+        return bigInteger.toString(16);
+    }
+
 }
