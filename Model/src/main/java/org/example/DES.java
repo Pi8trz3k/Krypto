@@ -119,6 +119,11 @@ public class DES {
             {2,  1,  14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11}
     };
 
+    public DES() {
+        inputFile = new File(path.toUri());
+        key = hexToBin(inputKey);
+        subKeys = new String[16];
+    }
 
     private static String hexToBin(String hex) {
         hex = hex.replaceAll("0", "0000");
