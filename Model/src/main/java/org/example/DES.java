@@ -131,4 +131,33 @@ public class DES {
         return bigInteger.toString(16);
     }
 
+
+    private static void buildSubKeys(String key) {
+        StringBuilder keyPC1 = new StringBuilder();
+
+        // permutation with PC1 table
+        for(int i = 0; i < PC1.length; i++) {
+            keyPC1.append(key.charAt(PC1[i] - 1));
+        }
+
+        String leftHalfString = keyPC1.substring(0, 28);
+        String rightHalfString = keyPC1.substring(28);
+
+        for (int i = 0; i < 16; i++) {
+            // shifting with positions in keyShifts
+            leftHalfString = (leftHalfString.substring(keyShift[i]) + leftHalfString.substring(0, keyShift[i]));
+            rightHalfString = rightHalfString.substring(keyShift[i]) + rightHalfString.substring(0, keyShift[i]);
+
+            String merged = leftHalfString + rightHalfString;
+
+            StringBuilder keyPC2 = new StringBuilder();
+
+            //permutation with PC2 table
+            for (int j = 0; j < PC2.length; j++) {
+                keyPC2.append(merged.charAt(PC2[j] - 1));
+            }
+
+            subKeys[i] = String.valueOf(keyPC2);
+        }
+    }
 }
