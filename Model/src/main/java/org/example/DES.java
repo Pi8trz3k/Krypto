@@ -1,13 +1,26 @@
 package org.example;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class DES {
+
     // key lenght
     private static final int keyLength = 64;
 
     // inputKey - generated or input from user(string) in hex
     private static String inputKey = "133457799BBCDFF1";
+
+    private static File inputFile;
+
+    private static Path path = Paths.get("C:\\Users\\Kacper\\Documents\\Studia\\4sem\\Krypto\\messageDES.txt");
+
     // key - inputKey, binary form in string
     private static String key;
 
@@ -106,6 +119,7 @@ public class DES {
             {2,  1,  14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11}
     };
 
+
     private static String hexToBin(String hex) {
         hex = hex.replaceAll("0", "0000");
         hex = hex.replaceAll("1", "0001");
@@ -160,4 +174,21 @@ public class DES {
             subKeys[i] = String.valueOf(keyPC2);
         }
     }
+
+    // reading bytes in decimal
+    public byte[] getBytesFromFile(File file) throws IOException {
+        byte[] bytes = Files.readAllBytes(Path.of(file.toURI()));
+
+        for(int i = 0; i < bytes.length; i++) {
+            System.out.print(bytes[i] + ", ");
+        }
+        System.out.println();
+        String s = new String(bytes, StandardCharsets.UTF_8);
+        System.out.println("Wiadomość odczytana z bajtow " + s);
+        System.out.println("Dlugosc: " + bytes.length);
+
+        return bytes;
+    }
+
+
 }
