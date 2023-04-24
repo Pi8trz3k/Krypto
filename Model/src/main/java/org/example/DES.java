@@ -63,7 +63,7 @@ public class DES {
             63, 55, 47, 39, 31, 23, 15, 7
     };
 
-    private static int[] g = {
+    private static final int[] g = {
                     32,  1,  2,  3,  4,  5,
                     4,  5,  6,  7,  8,  9,
                     8,  9, 10, 11, 12, 13,
@@ -154,7 +154,7 @@ public class DES {
             {2,  1,  14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11}
     };
 
-    private static int[][][] s = {S1, S2, S3, S4, S5, S6, S7, S8};
+    private static final int[][][] s = {S1, S2, S3, S4, S5, S6, S7, S8};
 
     public static String getSubKey(int row) {
         return subKeys[row];
@@ -237,10 +237,102 @@ public class DES {
         return bytes;
     }
 
+    public static String encryptBlock(String dataBlock) {
+        if(dataBlock.length() != 64) {
+            throw new RuntimeException("Blok ma zły rozmiar");
+        }
 
+        StringBuilder IPout = new StringBuilder("");
+
+        // IP permutation
+        for (int i = 0; i < IP.length; i++) {
+            IPout.append(dataBlock.charAt(IP[i] - 1));
+        }
+
+        String leftHalf = IPout.substring(0, 32);
+        String rightHalf = IPout.substring(32);
+
+        for (int i = 0; i < 16; i++) {
+
+            // 48 bit long subKey
+            String currentKey = getSubKey(i);
+            String fesitelResult = feistel(rightHalf, currentKey);
+
+            String message2 = new String(xorString(fesitelResult, leftHalf));
+
+            while(message2.length() < 32) {
+                message2 = "0" + message2;
+            }
+
+            leftHalf = rightHalf;
+            rightHalf = message2;
+        }
+
+        String in = rightHalf + leftHalf;
+        String output = "";
+        for (int i = 0; i < IPi.length; i++) {
+            output = output + in.charAt(IPi[i] - 1);
+        }
+
+        return output;
+    }
+
+    private static String feistel(String rightHalfMessage, String key) {
+        StringBuilder expandedMessage = new StringBuilder();
+
+        // expanding message to 48 bit long
+        for (int i = 0; i < g.length; i++) {
+            expandedMessage.append(rightHalfMessage.charAt(g[i] - 1));
+        }
+
+        StringBuilder bin = new StringBuilder(xorString(expandedMessage.toString(), key));
+
+        while (bin.length() < 48) {
+            bin.insert(0, "0");
+        }
+
+        String[] sBoxes = new String[8];
+        for (int i = 0; i < 8; i++) {
+            sBoxes[i] = bin.substring(0, 6);
+            bin = new StringBuilder(bin.substring(6));
+        }
+
+        // calculation of S-Box
+        String[] sout = new String[8];
+        for (int i = 0 ; i < 8; i++) {
+            int[][] curS = s[i];
+
+            String cur = sBoxes[i];
+            // Get binary values
+            int row = Integer.parseInt(cur.charAt(0) + "" + cur.charAt(5), 2);
+            int col = Integer.parseInt(cur.substring(1, 5), 2);
+
+            // Do S-Box table lookup
+            sout[i] = Integer.toBinaryString(curS[row][col]);
+
+            // Make sure the string is 4 bits
+            while(sout[i].length() < 4)
+                sout[i] = "0" + sout[i];
+
+        }
+
+        // Merge S-Box outputs into one 32-bit string
+        StringBuilder merged = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            merged.append(sout[i]);
+        }
+
+        // Apply Permutation P
+        StringBuilder mergedP = new StringBuilder();
+        for (int i = 0; i < p.length; i++) {
+            mergedP.append(merged.charAt(p[i] - 1));
+        }
+
+        return mergedP.toString();
+    }
 
     private static String xorString(String a, String b) {
-        StringBuilder xor = new StringBuilder("");
+        StringBuilder xor = new StringBuilder();
         for (int i = 0; i < a.length(); i++) {
             if (a.charAt(i) == b.charAt(i)) {
                 xor.append("0");
