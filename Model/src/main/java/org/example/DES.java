@@ -187,9 +187,26 @@ public class DES {
         return hex;
     }
 
-    private static String binToHex(String bin) {
+    public static String binToHex(String bin) {
         BigInteger bigInteger = new BigInteger(bin, 2);
         return bigInteger.toString(16);
+    }
+
+    public static String decToBin(byte[] bytes) {
+        StringBuilder binaryConverted = new StringBuilder();
+        for (int i = 0; i < bytes.length; i++) {
+            int number = bytes[i];
+            StringBuilder binary = new StringBuilder();
+            while(number > 0) {
+                binary.insert(0, (number % 2));
+                number = number / 2;
+            }
+            while(binary.length() < 8) {
+                binary.insert(0, "0");
+            }
+            binaryConverted.append(binary);
+        }
+        return binaryConverted.toString();
     }
 
     // create 16 keys, each 48 bit long
@@ -226,7 +243,7 @@ public class DES {
     public byte[] getBytesFromFile(File file) throws IOException {
         byte[] bytes = Files.readAllBytes(Path.of(file.toURI()));
 
-        for(int i = 0; i < bytes.length; i++) {
+        for (int i = 0; i < bytes.length; i++) {
             System.out.print(bytes[i] + ", ");
         }
         System.out.println();
@@ -237,7 +254,7 @@ public class DES {
         return bytes;
     }
 
-    public static String encryptBlock(String dataBlock) {
+    public String encryptBlock(String dataBlock) {
         if(dataBlock.length() != 64) {
             throw new RuntimeException("Blok ma zły rozmiar");
         }
@@ -342,7 +359,5 @@ public class DES {
         }
         return xor.toString();
     }
-
-
 
 }
