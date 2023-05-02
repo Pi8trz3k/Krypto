@@ -1,25 +1,11 @@
 package org.example;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class DES {
 
-    // key lenght
-    private static final int keyLength = 64;
-
     // inputKey - generated or input from user(string) in hex
-    private static String inputKey = "133457799BBCDFF1";
-
-    private static File inputFile;
-
-    private static Path path = Paths.get("C:\\Users\\Kacper\\Documents\\Studia\\4sem\\Krypto\\messageDES.txt");
+    private static final String inputKey = "133457799BBCDFF1";
 
     // key - inputKey, binary form in string
     private static String key;
@@ -161,7 +147,6 @@ public class DES {
     }
 
     public DES() {
-        inputFile = new File(path.toUri());
         key = hexToBin(inputKey);
         subKeys = new String[16];
         buildSubKeys(key);
@@ -194,14 +179,14 @@ public class DES {
 
     public static String decToBin(byte[] bytes) {
         StringBuilder binaryConverted = new StringBuilder();
-        for (int i = 0; i < bytes.length; i++) {
-            int number = bytes[i];
+        for (int aByte : bytes) {
+            int number = aByte;
             StringBuilder binary = new StringBuilder();
-            while(number > 0) {
+            while (number > 0) {
                 binary.insert(0, (number % 2));
                 number = number / 2;
             }
-            while(binary.length() < 8) {
+            while (binary.length() < 8) {
                 binary.insert(0, "0");
             }
             binaryConverted.append(binary);
@@ -214,8 +199,8 @@ public class DES {
         StringBuilder keyPC1 = new StringBuilder();
 
         // permutation with PC1 table
-        for (int i = 0; i < PC1.length; i++) {
-            keyPC1.append(key.charAt(PC1[i] - 1));
+        for (int j : PC1) {
+            keyPC1.append(key.charAt(j - 1));
         }
 
         String leftHalfString = keyPC1.substring(0, 28);
@@ -231,39 +216,48 @@ public class DES {
             StringBuilder keyPC2 = new StringBuilder();
 
             //permutation with PC2 table
-            for (int j = 0; j < PC2.length; j++) {
-                keyPC2.append(merged.charAt(PC2[j] - 1));
+            for (int k : PC2) {
+                keyPC2.append(merged.charAt(k - 1));
             }
 
             subKeys[i] = String.valueOf(keyPC2);
         }
     }
 
-    // reading bytes in decimal
-    public byte[] getBytesFromFile(File file) throws IOException {
-        byte[] bytes = Files.readAllBytes(Path.of(file.toURI()));
+    public String encrypt(String data, String key) {
 
-        for (int i = 0; i < bytes.length; i++) {
-            System.out.print(bytes[i] + ", ");
+        StringBuilder dataBuilder = new StringBuilder(data);
+        while (dataBuilder.length() % 64 != 0) {
+            dataBuilder.insert(dataBuilder.length(), "0");
         }
-        System.out.println();
-        String s = new String(bytes, StandardCharsets.UTF_8);
-        System.out.println("Wiadomość odczytana z bajtow " + s);
-        System.out.println("Dlugosc: " + bytes.length);
 
-        return bytes;
+        int blocksCount = dataBuilder.length() / 64;
+        String[] uncipheredBlocks = new String[blocksCount];
+        String[] cipheredBlocks = new String[blocksCount];
+        StringBuilder cipheredData = new StringBuilder();
+
+        int offset = 0;
+        for (int i = 0; i < blocksCount; i++) {
+            uncipheredBlocks[i] = dataBuilder.substring(offset, offset + 64);
+            cipheredBlocks[i] = encryptBlock(uncipheredBlocks[i]);
+            cipheredData.append(cipheredBlocks[i]);
+            offset += 64;
+        }
+
+        return cipheredData.toString();
     }
 
+    // encryption of 64 bit long text block
     public String encryptBlock(String dataBlock) {
         if(dataBlock.length() != 64) {
             throw new RuntimeException("Blok ma zły rozmiar");
         }
 
-        StringBuilder IPout = new StringBuilder("");
+        StringBuilder IPout = new StringBuilder();
 
         // IP permutation
-        for (int i = 0; i < IP.length; i++) {
-            IPout.append(dataBlock.charAt(IP[i] - 1));
+        for (int j : IP) {
+            IPout.append(dataBlock.charAt(j - 1));
         }
 
         String leftHalf = IPout.substring(0, 32);
@@ -275,38 +269,33 @@ public class DES {
             String currentKey = getSubKey(i);
             String fesitelResult = feistel(rightHalf, currentKey);
 
-            String message2 = new String(xorString(fesitelResult, leftHalf));
+            StringBuilder message2 = new StringBuilder(xorString(fesitelResult, leftHalf));
 
             while(message2.length() < 32) {
-                message2 = "0" + message2;
+                message2.insert(0, "0");
             }
 
             leftHalf = rightHalf;
-            rightHalf = message2;
+            rightHalf = message2.toString();
         }
 
         String in = rightHalf + leftHalf;
-        String output = "";
-        for (int i = 0; i < IPi.length; i++) {
-            output = output + in.charAt(IPi[i] - 1);
+        StringBuilder output = new StringBuilder();
+        for (int j : IPi) {
+            output.append(in.charAt(j - 1));
         }
 
-        return output;
+        return output.toString();
     }
 
     private static String feistel(String rightHalfMessage, String key) {
         StringBuilder expandedMessage = new StringBuilder();
 
         // expanding message to 48 bit long
-        for (int i = 0; i < g.length; i++) {
-            expandedMessage.append(rightHalfMessage.charAt(g[i] - 1));
+        for (int j : g) {
+            expandedMessage.append(rightHalfMessage.charAt(j - 1));
         }
-
         StringBuilder bin = new StringBuilder(xorString(expandedMessage.toString(), key));
-
-        while (bin.length() < 48) {
-            bin.insert(0, "0");
-        }
 
         String[] sBoxes = new String[8];
         for (int i = 0; i < 8; i++) {
@@ -341,8 +330,8 @@ public class DES {
 
         // Apply Permutation P
         StringBuilder mergedP = new StringBuilder();
-        for (int i = 0; i < p.length; i++) {
-            mergedP.append(merged.charAt(p[i] - 1));
+        for (int j : p) {
+            mergedP.append(merged.charAt(j - 1));
         }
 
         return mergedP.toString();
