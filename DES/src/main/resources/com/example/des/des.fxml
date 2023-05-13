@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="552.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.des.HelloController">
+   <children>
+      <GridPane layoutX="11.0" layoutY="-2.0" prefHeight="207.0" prefWidth="781.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="251.0" minWidth="10.0" prefWidth="119.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="259.0" minWidth="10.0" prefWidth="238.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="176.0" minWidth="10.0" prefWidth="86.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="294.0" minWidth="10.0" prefWidth="294.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="123.0" minHeight="10.0" prefHeight="101.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="121.0" minHeight="10.0" prefHeight="106.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <TextField fx:id="keyValue" prefHeight="25.0" prefWidth="183.0" GridPane.columnIndex="1" />
+            <Label prefHeight="34.0" prefWidth="139.0" text="Klucz heksadecymalnie" />
+            <Button fx:id="buttonGenerateKey" mnemonicParsing="false" onAction="#generateKey" prefHeight="25.0" prefWidth="58.0" text="Generuj" GridPane.columnIndex="2" />
+            <Label prefHeight="34.0" prefWidth="139.0" text="Wczytaj klucz z pliku" GridPane.rowIndex="1" />
+            <TextField fx:id="keyPath" prefHeight="25.0" prefWidth="183.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button mnemonicParsing="false" onAction="#loadKey" prefHeight="25.0" prefWidth="58.0" text="Wczytaj" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <GridPane prefHeight="135.0" prefWidth="294.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="177.0" minWidth="10.0" prefWidth="177.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="142.0" minWidth="10.0" prefWidth="117.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="47.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="79.0" minHeight="10.0" prefHeight="79.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label prefHeight="34.0" prefWidth="139.0" text="Zapis klucza do pliku" />
+                  <TextField fx:id="pathToSaveKey" prefHeight="25.0" prefWidth="183.0" GridPane.rowIndex="1" />
+                  <Button mnemonicParsing="false" onAction="#saveKey" prefHeight="25.0" prefWidth="58.0" text="Zapisz" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
+         </children>
+      </GridPane>
+      <GridPane layoutX="13.0" layoutY="207.0" prefHeight="346.0" prefWidth="768.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="296.0" minWidth="10.0" prefWidth="296.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="287.0" minWidth="10.0" prefWidth="187.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="285.0" minWidth="10.0" prefWidth="285.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <GridPane>
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="199.0" minWidth="10.0" prefWidth="183.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="67.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label prefHeight="34.0" prefWidth="164.0" text="Wczytaj plik z tekstem jawnym" GridPane.valignment="BOTTOM" />
+                  <TextField fx:id="pathUncipheredFile" prefHeight="25.0" prefWidth="183.0" GridPane.rowIndex="1" />
+                  <Button fx:id="openUncipheredFile" mnemonicParsing="false" onAction="#loadUncipheredFile" prefHeight="25.0" prefWidth="58.0" text="Wczytaj" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
+            <TextArea fx:id="uncipheredText" prefHeight="115.0" prefWidth="238.0" GridPane.rowIndex="1" />
+            <TextArea fx:id="cipheredText" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <GridPane GridPane.columnIndex="2">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="199.0" minWidth="10.0" prefWidth="183.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="67.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label prefHeight="34.0" prefWidth="164.0" text="Wczytaj plik z szyfrogramem" GridPane.valignment="BOTTOM" />
+                  <TextField prefHeight="25.0" prefWidth="183.0" GridPane.rowIndex="1" />
+                  <Button mnemonicParsing="false" onAction="#loadCipheredFile" prefHeight="25.0" prefWidth="58.0" text="Wczytaj" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
+            <GridPane GridPane.rowIndex="2">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="199.0" minWidth="10.0" prefWidth="183.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="67.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="53.0" minHeight="10.0" prefHeight="41.799998092651364" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="81.0" minHeight="10.0" prefHeight="51.40000190734864" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="81.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label prefHeight="34.0" prefWidth="164.0" text="Zapisz plik z tekstem jawnym" />
+                  <TextField prefHeight="25.0" prefWidth="183.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </TextField>
+                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Zapisz" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
+            <GridPane GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="199.0" minWidth="10.0" prefWidth="183.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="67.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="52.0" minHeight="10.0" prefHeight="42.399998092651366" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="87.0" minHeight="10.0" prefHeight="57.20000190734863" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="87.0" minHeight="10.0" prefHeight="24.599999999999994" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label prefHeight="34.0" prefWidth="190.0" text="Zapisz plik z tekstem szyfrogramem" />
+                  <TextField prefHeight="25.0" prefWidth="183.0" GridPane.rowIndex="1" />
+                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Zapisz" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
+            <GridPane prefHeight="69.0" prefWidth="256.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Button fx:id="cipherTextButton" mnemonicParsing="false" onAction="#cipherFromText" prefHeight="25.0" prefWidth="90.0" text="Szyfruj tekst" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                  <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="75.0" text="Deszyfruj" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                  <Button fx:id="cipherFileButton" mnemonicParsing="false" onAction="#cipherFromFile" prefHeight="25.0" prefWidth="95.0" text="Szyfruj plik" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Button>
+               </children>
+            </GridPane>
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>

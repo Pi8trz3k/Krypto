@@ -1,11 +1,11 @@
-package org.example;
+package com.example.des;
 
 import java.math.BigInteger;
 
 public class DES {
 
     // inputKey - generated or input from user(string) in hex
-    private static final String inputKey = "133457799BBCDFF1";
+    private static String inputKey; //133457799BBCDFF1
 
     // key - inputKey, binary form in string
     private static String key;
@@ -146,11 +146,12 @@ public class DES {
         return subKeys[row];
     }
 
-    public DES() {
+    public DES(String inputKey) {
         key = hexToBin(inputKey);
         subKeys = new String[16];
         buildSubKeys(key);
     }
+
 
     public static String hexToBin(String hex) {
         hex = hex.replaceAll("0", "0000");
@@ -172,15 +173,34 @@ public class DES {
         return hex;
     }
 
+    //binary to hex with leading zeros
     public static String binToHex(String bin) {
+        int remainder = bin.length() % 4;
+        StringBuilder binBuilder = new StringBuilder(bin);
+        for (int i = 0; i < remainder; i++) {
+            binBuilder.insert(0, "0");
+        }
+
+        int zeros = 0;
+        bin = binBuilder.toString();
+        for(int i = 0; i < bin.length() - 4; i = i + 4){
+            if (bin.charAt(i) == '0' && bin.charAt(i + 1) == '0' && bin.charAt(i + 2) == '0' && bin.charAt(i + 3) == '0') {
+                zeros++;
+            }
+        }
         BigInteger bigInteger = new BigInteger(bin, 2);
-        return bigInteger.toString(16);
+        StringBuilder returnString = new StringBuilder(bigInteger.toString(16));
+        for(int i = 0; i < zeros; i++) {
+            returnString.insert(0, "0");
+        }
+        return returnString.toString();
     }
 
     public static String decToBin(byte[] bytes) {
         StringBuilder binaryConverted = new StringBuilder();
         for (int aByte : bytes) {
             int number = aByte;
+            if(number < 0) number = -number;
             StringBuilder binary = new StringBuilder();
             while (number > 0) {
                 binary.insert(0, (number % 2));
@@ -224,7 +244,7 @@ public class DES {
         }
     }
 
-    public String encrypt(String data, String key) {
+    public String encrypt(String data/*, String key*/) {
 
         StringBuilder dataBuilder = new StringBuilder(data);
         while (dataBuilder.length() % 64 != 0) {
@@ -245,6 +265,30 @@ public class DES {
         }
 
         return cipheredData.toString();
+    }
+
+    public String decrypt(String data, String key) {
+
+        StringBuilder dataBuilder = new StringBuilder(data);
+        while (dataBuilder.length() % 64 != 0) {
+            dataBuilder.append( "0");
+        }
+
+        int blocksCount = dataBuilder.length() / 64;
+        String[] cipheredBlocks = new String[blocksCount];
+        String[] uncipheredBlocks = new String[blocksCount];
+        StringBuilder uncipheredData = new StringBuilder();
+
+        int offset = 0;
+        for (int i = 0; i < blocksCount; i++) {
+            cipheredBlocks[i] = dataBuilder.substring(offset, offset + 64);
+//            System.out.println("Divided block: " + cipheredBlocks[i]);
+            uncipheredBlocks[i] = decryptBlock(cipheredBlocks[i]);
+            uncipheredData.append(uncipheredBlocks[i]);
+            offset += 64;
+        }
+//        System.out.println("Decrypt result: " + uncipheredData);
+        return uncipheredData.toString();
     }
 
     // encryption of 64 bit long text block
@@ -285,6 +329,46 @@ public class DES {
             output.append(in.charAt(j - 1));
         }
 
+        return output.toString();
+    }
+
+    public String decryptBlock(String dataBlock) {
+        if(dataBlock.length() != 64) {
+            throw new RuntimeException("Blok ma zły rozmiar");
+        }
+
+        StringBuilder IPout = new StringBuilder();
+
+        // IP permutation
+        for (int j : IP) {
+            IPout.append(dataBlock.charAt(j - 1));
+        }
+
+        String leftHalf = IPout.substring(0, 32);
+        String rightHalf = IPout.substring(32);
+
+        for (int i = 15; i >= 0; i--) {
+
+            // 48 bit long subKey
+            String currentKey = getSubKey(i);
+            String fesitelResult = feistel(rightHalf, currentKey);
+
+            StringBuilder message2 = new StringBuilder(xorString(fesitelResult, leftHalf));
+
+            while(message2.length() < 32) {
+                message2.insert(0, "0");
+            }
+
+            leftHalf = rightHalf;
+            rightHalf = message2.toString();
+        }
+
+        String in = rightHalf + leftHalf;
+        StringBuilder output = new StringBuilder();
+        for (int j : IPi) {
+            output.append(in.charAt(j - 1));
+        }
+//        System.out.println("Decrypted block: " + output.toString());
         return output.toString();
     }
 
@@ -334,6 +418,7 @@ public class DES {
             mergedP.append(merged.charAt(j - 1));
         }
 
+//        System.out.println("Permuted in feistel: " + mergedP);
         return mergedP.toString();
     }
 
@@ -349,4 +434,21 @@ public class DES {
         return xor.toString();
     }
 
+    public static byte[] hexToBytes(String tekst) {
+        if (tekst == null) { return null;}
+        else if (tekst.length() < 2) { return null;}
+        else { if (tekst.length()%2!=0)tekst+='0';
+            int dl = tekst.length() / 2;
+            byte[] wynik = new byte[dl];
+            for (int i = 0; i < dl; i++) {
+                try {
+                    wynik[i] = (byte) Integer.parseInt(tekst.substring(i * 2, i * 2 + 2), 16);
+                }
+                catch (NumberFormatException e) {
+                    System.out.println("Blad w przeliczaniu hex na byte");
+                }
+            }
+            return wynik;
+        }
+    }
 }
