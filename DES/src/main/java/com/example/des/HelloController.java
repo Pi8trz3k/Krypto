@@ -2,20 +2,15 @@ package com.example.des;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 
 public class HelloController {
 
@@ -30,6 +25,15 @@ public class HelloController {
 
     @FXML
     private TextField pathUncipheredFile;
+
+    @FXML
+    private TextField pathCipheredFile;
+
+    @FXML
+    private TextField pathToWriteUnciphered;
+
+    @FXML
+    private TextField pathToWriteCiphered;
 
     @FXML
     private TextArea uncipheredText;
@@ -105,22 +109,24 @@ public class HelloController {
         return bytes;
     }
 
-    public void loadUncipheredFile(ActionEvent event) {
+    public void loadUncipheredFile(ActionEvent event) throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
         File uncipheredFile = fileChooser.showOpenDialog(HelloApplication.getCurrentStage());
+        byte[] table = new byte[(int)uncipheredFile.length()];
 
         try {
-            textNonCipheredInBytes = Files.readAllBytes(Path.of(uncipheredFile.toURI()));
-            System.out.println(Arrays.toString(textNonCipheredInBytes));
-            String data = new String(textNonCipheredInBytes, StandardCharsets.UTF_8);
-            uncipheredText.setText(data);
-        } catch (IOException e) {
-            System.out.println("Problem z otwarciem pliku zawierającego niezaszyfrowane dane");;
+            try (FileInputStream fin = new FileInputStream(uncipheredFile)) {
+                fin.read(table);
+                textNonCipheredInBytes = table;
+                String text = new String(table, StandardCharsets.UTF_8);
+                uncipheredText.setText(text);
+            }
+        } catch (Exception e) {
+            System.out.println("Operacja nie powiodła się");
         }
 
         pathUncipheredFile.setText(uncipheredFile.getAbsolutePath());
     }
-
 
     public void cipherFromText(ActionEvent event) {
         String key = keyValue.getText();
@@ -133,15 +139,15 @@ public class HelloController {
     }
 
     public void cipherFromFile(ActionEvent event) throws IOException {
-        String key = keyValue.getText();
-//        File file = new File(pathUncipheredFile.toString());
+        String keyHex = keyValue.getText();
         byte[] bytes = textNonCipheredInBytes;
 
         String textInBin = DES.decToBin(bytes);
-        DES des = new DES(key);
+        DES des = new DES(keyHex);
         String encryptedBin = des.encrypt(textInBin);
         String encryptedHex = DES.binToHex(encryptedBin);
         cipheredText.setText(encryptedHex);
+        textCipheredInBytes = binaryToBytes(encryptedBin);
     }
 
     public void loadCipheredFile(ActionEvent event) {
@@ -149,14 +155,65 @@ public class HelloController {
         File cipheredFile = fileChooser.showOpenDialog(HelloApplication.getCurrentStage());
 
         try {
-            textCipheredInBytes = Files.readAllBytes(Path.of(cipheredFile.toURI()));
-            System.out.println(Arrays.toString(textCipheredInBytes));
-            String data = new String(textCipheredInBytes, StandardCharsets.UTF_8);
-            cipheredText.setText(data);
-        } catch (IOException e) {
-            System.out.println("Problem z otwarciem pliku zawierającego niezaszyfrowane dane");;
+            byte[] cipheredBytes;
+            try (FileInputStream fin = new FileInputStream(cipheredFile)) {
+                byte[] table = new byte[(int)cipheredFile.length()];
+                fin.read(table);
+                cipheredBytes = table;
+                String cipheredBin = DES.decToBin(cipheredBytes);
+                System.out.println("CipheredBin: " + cipheredBin);
+                String cipheredHex = DES.binToHex(cipheredBin);
+                System.out.println("CipheredHex: " + cipheredHex);
+                cipheredText.setText(cipheredHex);
+            }
+        } catch (Exception e) {
+            System.out.println("Operacja nie powiodła się");
         }
 
-        //pathCipheredFile.setText(cipheredFile.getAbsolutePath());
+        pathCipheredFile.setText(cipheredFile.getAbsolutePath());
+    }
+
+    public void saveUncipherToFile(ActionEvent event) throws FileNotFoundException {
+        FileChooser fileChooser = new FileChooser();
+        File textWriteFile = fileChooser.showSaveDialog(HelloApplication.getCurrentStage());
+
+        byte[] bytes = textNonCipheredInBytes;
+
+        try(FileOutputStream out = new FileOutputStream(textWriteFile)) {
+            out.write(bytes);
+        } catch (IOException e) {
+                throw new RuntimeException(e);
+        }
+        pathToWriteUnciphered.setText(textWriteFile.getAbsolutePath());
+    }
+
+    public void saveCipherToFile(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        File textWriteFile = fileChooser.showSaveDialog(HelloApplication.getCurrentStage());
+
+        byte[] bytes = textCipheredInBytes;
+
+        if(textWriteFile != null) {
+            try(FileOutputStream out = new FileOutputStream(textWriteFile)) {
+                out.write(bytes);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            pathToWriteCiphered.setText(textWriteFile.getAbsolutePath());
+        }
+    }
+
+    public void decipher(ActionEvent event) {
+        String cipheredInHex = cipheredText.getText();
+        String cipheredInBin = DES.hexToBin(cipheredInHex);
+        String key = keyValue.getText();
+        DES des = new DES(key);
+
+        String decipheredInBin = des.decrypt(cipheredInBin);
+        String decipheredInHex = DES.binToHex(decipheredInBin);
+        byte[] decryptedBytes = DES.hexToBytes(decipheredInHex);
+        String decipheredText = new String(decryptedBytes, StandardCharsets.UTF_8);
+        uncipheredText.setText(decipheredText);
+        textNonCipheredInBytes = decryptedBytes;
     }
 }

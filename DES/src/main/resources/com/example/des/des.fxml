@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="552.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.des.HelloController">
+<AnchorPane prefHeight="552.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.des.HelloController">
    <children>
       <GridPane layoutX="11.0" layoutY="-2.0" prefHeight="207.0" prefWidth="781.0">
         <columnConstraints>
@@ -65,7 +71,7 @@
                <children>
                   <Label prefHeight="34.0" prefWidth="164.0" text="Wczytaj plik z tekstem jawnym" GridPane.valignment="BOTTOM" />
                   <TextField fx:id="pathUncipheredFile" prefHeight="25.0" prefWidth="183.0" GridPane.rowIndex="1" />
-                  <Button fx:id="openUncipheredFile" mnemonicParsing="false" onAction="#loadUncipheredFile" prefHeight="25.0" prefWidth="58.0" text="Wczytaj" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Button mnemonicParsing="false" onAction="#loadUncipheredFile" prefHeight="25.0" prefWidth="58.0" text="Wczytaj" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
             <TextArea fx:id="uncipheredText" prefHeight="115.0" prefWidth="238.0" GridPane.rowIndex="1" />
@@ -81,7 +87,7 @@
                </rowConstraints>
                <children>
                   <Label prefHeight="34.0" prefWidth="164.0" text="Wczytaj plik z szyfrogramem" GridPane.valignment="BOTTOM" />
-                  <TextField prefHeight="25.0" prefWidth="183.0" GridPane.rowIndex="1" />
+                  <TextField fx:id="pathCipheredFile" prefHeight="25.0" prefWidth="183.0" GridPane.rowIndex="1" />
                   <Button mnemonicParsing="false" onAction="#loadCipheredFile" prefHeight="25.0" prefWidth="58.0" text="Wczytaj" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
@@ -97,12 +103,12 @@
                </rowConstraints>
                <children>
                   <Label prefHeight="34.0" prefWidth="164.0" text="Zapisz plik z tekstem jawnym" />
-                  <TextField prefHeight="25.0" prefWidth="183.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                  <TextField fx:id="pathToWriteUnciphered" prefHeight="25.0" prefWidth="183.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
                   </TextField>
-                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Zapisz" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Button mnemonicParsing="false" onAction="#saveUncipherToFile" prefHeight="25.0" prefWidth="58.0" text="Zapisz" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
             <GridPane GridPane.columnIndex="2" GridPane.rowIndex="2">
@@ -117,8 +123,8 @@
                </rowConstraints>
                <children>
                   <Label prefHeight="34.0" prefWidth="190.0" text="Zapisz plik z tekstem szyfrogramem" />
-                  <TextField prefHeight="25.0" prefWidth="183.0" GridPane.rowIndex="1" />
-                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Zapisz" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="pathToWriteCiphered" prefHeight="25.0" prefWidth="183.0" GridPane.rowIndex="1" />
+                  <Button mnemonicParsing="false" onAction="#saveCipherToFile" prefHeight="25.0" prefWidth="58.0" text="Zapisz" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
             <GridPane prefHeight="69.0" prefWidth="256.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -132,7 +138,7 @@
               </rowConstraints>
                <children>
                   <Button fx:id="cipherTextButton" mnemonicParsing="false" onAction="#cipherFromText" prefHeight="25.0" prefWidth="90.0" text="Szyfruj tekst" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                  <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="75.0" text="Deszyfruj" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                  <Button fx:id="decipher" mnemonicParsing="false" onAction="#decipher" prefHeight="26.0" prefWidth="75.0" text="Deszyfruj" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                   <Button fx:id="cipherFileButton" mnemonicParsing="false" onAction="#cipherFromFile" prefHeight="25.0" prefWidth="95.0" text="Szyfruj plik" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                      <GridPane.margin>
                         <Insets />
